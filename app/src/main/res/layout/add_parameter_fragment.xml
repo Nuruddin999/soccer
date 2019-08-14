@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:hint="Имя главного параметра"
+
+            android:id="@+id/parent_param_name"/>
+    <LinearLayout
+            android:id="@+id/add_parameter_and_button"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:weightSum="4"
+    android:layout_below="@id/parent_param_name">
+        <EditText
+                android:layout_width="0dp"
+                android:layout_weight="3" android:layout_height="wrap_content"
+
+                android:hint="Добавить параметр"
+
+                android:id="@+id/parameter_name"/>
+        <Button
+                android:text="Button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:id="@+id/add_buton"
+
+        />
+    </LinearLayout>
+
+    <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/parent_param_label"
+android:layout_below="@id/add_parameter_and_button"
+    />
+    <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/parameters_listview"
+            android:layout_below="@id/parent_param_label"
+    android:layout_above="@id/save_button"/>
+
+    <Button
+            android:text="Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/save_button"
+android:layout_alignParentBottom="true"
+    />
+</RelativeLayout>
