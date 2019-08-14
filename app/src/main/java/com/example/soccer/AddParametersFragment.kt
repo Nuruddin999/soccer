@@ -1,9 +1,9 @@
 package com.example.soccer
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -18,16 +18,16 @@ import com.example.soccer.Models.ParentParameter
 import com.google.firebase.database.FirebaseDatabase
 import java.util.ArrayList
 
-class AddParametersFragment:Fragment() {
+class AddParametersFragment: Fragment() {
     lateinit var parentParamName: EditText
     lateinit var parentParamNameLabel:TextView
     lateinit var parameter:EditText
     lateinit var addParameter: Button
-    lateinit var parameters: RecyclerView
+    lateinit var parameters: androidx.recyclerview.widget.RecyclerView
     lateinit var parameters_list:ArrayList<Parameter>
     lateinit var parameters_cl:List<Parameter>
     lateinit var save_parameters:Button
-lateinit var recycler_layoutmanager:RecyclerView.LayoutManager
+lateinit var recycler_layoutmanager: androidx.recyclerview.widget.RecyclerView.LayoutManager
     lateinit var parameterAdapter:ParameterAdapter
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view=layoutInflater.inflate(R.layout.add_parameter_fragment, container,false)
@@ -54,7 +54,7 @@ parentParamName=view!!.findViewById(R.id.parent_param_name)
         parameters=view.findViewById(R.id.parameters_listview)
 save_parameters=view.findViewById(R.id.save_button)
 parameters_list=ArrayList<Parameter>()
-        recycler_layoutmanager = LinearLayoutManager(context)
+        recycler_layoutmanager = androidx.recyclerview.widget.LinearLayoutManager(context)
         parameters.layoutManager=recycler_layoutmanager
          parameterAdapter=ParameterAdapter(parameters_list as ArrayList<Parameter>,context!!)
         parameters.adapter=parameterAdapter

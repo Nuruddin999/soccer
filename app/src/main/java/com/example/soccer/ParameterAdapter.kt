@@ -1,13 +1,13 @@
 package com.example.soccer
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.soccer.Models.Parameter
 import java.util.ArrayList
 
-class ParameterAdapter(var list:ArrayList<Parameter>, val context: Context):RecyclerView.Adapter<ParameterViewHolder>() {
+class ParameterAdapter(var list:ArrayList<Parameter>, val context: Context): androidx.recyclerview.widget.RecyclerView.Adapter<ParameterViewHolder>() {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ParameterViewHolder {
 val v=LayoutInflater.from(p0.context).inflate(R.layout.parameter_item,p0, false)
         return ParameterViewHolder(v)
