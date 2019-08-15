@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,24 +35,26 @@ parameters_recycler_view=view.findViewById(R.id.parameters_list)
 adapter=object :FirebaseRecyclerAdapter<ParentParameter,ParamsViewHolder>(ParentParameter::class.java, R.layout.params_items, ParamsViewHolder::class.java,database){
     override fun populateViewHolder(p0: ParamsViewHolder?, p1: ParentParameter?, p2: Int) {
 p0?.parentParamName?.text=p1?.name
-        p0!!.parameters.layoutManager=LinearLayoutManager(context)
-        p0.parameters.adapter=ParameterAdapter(p1!!.parameters!!,context!!)
-p0.parameters.addOnItemTouchListener(object: RecyclerView.OnItemTouchListener{
-    override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-
-    }
-
-    override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-var action=e.action
-        when(action){
-            MotionEvent.ACTION_MOVE-> rv.parent.requestDisallowInterceptTouchEvent(true)
+   var str=""
+        for (t in p1?.parameters!!){
+            str+="${t.name} \n"
         }
-        return false
-    }
+        p0!!.parametersChild?.setText(str)
+            p0.parametersChild.visibility=TextView.GONE
 
-    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    }
-})
+
+
+
+        p0!!.showall.setOnClickListener {
+            if (p0!!.showall.text.equals("Hide")){
+                p0.parametersChild.visibility=RecyclerView.GONE
+                p0.showall.setText("Show all")
+            }
+            else {
+
+
+            p0.parametersChild.visibility=RecyclerView.VISIBLE
+        p0.showall.setText("Hide")} }
     }
 
 }
