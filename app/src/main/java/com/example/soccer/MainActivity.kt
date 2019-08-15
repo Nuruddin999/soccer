@@ -18,7 +18,11 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-
+                var ParametersListFragment=ParametersListFragment()
+                var fragmentTransaction=supportFragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.main_content,ParametersListFragment)
+                fragmentTransaction.commit()
+                return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
 

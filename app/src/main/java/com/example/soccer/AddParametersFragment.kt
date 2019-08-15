@@ -40,7 +40,7 @@ lateinit var recycler_layoutmanager: androidx.recyclerview.widget.RecyclerView.L
         save_parameters.setOnClickListener {
             var parentParameter=ParentParameter(parentParamNameLabel.text.toString(),parameters_list)
             var databaseref=FirebaseDatabase.getInstance().reference
-            var database=databaseref.child("Parameters").child(parentParamNameLabel.text.toString())
+            var database=databaseref.child("ParentParameter").child(parentParamNameLabel.text.toString())
             database.setValue(parentParameter)
         }
         return view
