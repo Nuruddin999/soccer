@@ -61,7 +61,13 @@ p0?.parentParamName?.text=p1?.name
         parameters_recycler_view.layoutManager=layoutManager
 
         parameters_recycler_view.adapter=adapter
-
+new_parameter_button=view.findViewById(R.id.new_parameter_button)
+        new_parameter_button.setOnClickListener {
+            var AddParametersFragment=AddParametersFragment()
+            var fragmentTransaction=fragmentManager!!.beginTransaction()
+            fragmentTransaction.replace(R.id.main_content,AddParametersFragment)
+            fragmentTransaction.commit()
+        }
         return view
     }
 }

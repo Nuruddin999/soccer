@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
+import com.example.soccer.Player.AddPlayerFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,9 +12,9 @@ class MainActivity : AppCompatActivity() {
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-               var AddParametersFragment=AddParametersFragment()
+               var AddPlayerFragment=AddPlayerFragment()
                 var fragmentTransaction=supportFragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.main_content,AddParametersFragment)
+                fragmentTransaction.replace(R.id.main_content,AddPlayerFragment)
                 fragmentTransaction.commit()
                 return@OnNavigationItemSelectedListener true
             }

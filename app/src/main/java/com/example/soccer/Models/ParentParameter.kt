@@ -8,7 +8,7 @@ class ParentParameter {
     constructor(){
 
     }
-    constructor(name: String?, parameters: ArrayList<Parameter>?) {
+     constructor(name: String?, parameters: ArrayList<Parameter>?) {
         this.name = name
         this.parameters = parameters
     }
