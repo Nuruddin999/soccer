@@ -1,12 +1,10 @@
-package com.example.soccer.Player
+package com.example.soccer.AddPlayer
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soccer.Models.ParentParameter
-import com.example.soccer.ParamsViewHolder
 import com.example.soccer.R
 import java.util.ArrayList
 
@@ -29,7 +27,7 @@ class ForPlayerParametersAdapter(var list: ArrayList<ParentParameter>, var conte
             totalvalue+=Integer.parseInt(t.value)
             holder.parentParamValue.text=totalvalue.toString()
         }
-        holder.parametersChild.layoutManager=LinearLayoutManager(context)
+
 
 
 

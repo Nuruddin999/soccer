@@ -1,4 +1,4 @@
-package com.example.soccer.Player
+package com.example.soccer.AddPlayer
 
 import android.content.Context
 import android.text.Editable

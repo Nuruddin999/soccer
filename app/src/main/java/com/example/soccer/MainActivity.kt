@@ -3,8 +3,7 @@ package com.example.soccer
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.TextView
-import com.example.soccer.Player.AddPlayerFragment
+import com.example.soccer.AddPlayer.AddPlayerFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +34,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var AddPlayerFragment=AddPlayerFragment()
+        var fragmentTransaction=supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.main_content,AddPlayerFragment)
+        fragmentTransaction.commit()
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
 

@@ -17,9 +17,16 @@ android:orientation="horizontal">
 </LinearLayout>
    <EditText
            android:id="@+id/add_player_input_name"
-           android:layout_width="match_parent" android:layout_height="wrap_content"/>
+           android:layout_width="wrap_content" android:layout_height="wrap_content"
+           android:hint="Имя игрока"
+   android:layout_gravity="center"/>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/add_player_parent_parameterlist"
             android:layout_width="match_parent"
                                                android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+    <Button
+            android:id="@+id/save_player_button"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:text="save player"
+    android:layout_margin="12dp"/>
 </LinearLayout>
