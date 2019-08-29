@@ -17,6 +17,7 @@ import com.example.soccer.R
 import com.google.firebase.database.*
 import com.google.gson.GsonBuilder
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ChildParametersFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
@@ -76,19 +77,16 @@ class ChildParametersFragment : Fragment() {
 
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 var parameter = p0.getValue(Parameter::class.java)
-                params.add(parameter!!)
                 var parentParameter=ParentParameter()
-                Log.d(activity!!.packageName, parameter?.name)
-                Log.d(this.toString(), parameter.name)
+                 params.add(parameter!!)
+                parentParameter.parameters=params
+                Log.d(this.toString(), parameter!!.name)
                 adapter.notifyDataSetChanged()
                 saveTotalValueButton.setOnClickListener {
-
-                    parentParameter.parameters = params
-                    parentParameter.name = parentparName
-
-                    parparList.add(parentParameter)
-                    players.params=parparList
                     parentParameter.totalValue = parentparamValue.text.toString()
+                    parentParameter.parameters=params
+                    parentParameter.name=parentparName
+                    parparList.add(parentParameter)
                     var db = databaseref.getReference().child("Players")
                     db.child(playerName.toString()).child("params").setValue(parparList)
 

@@ -45,6 +45,8 @@ class AddPlayerFragment : Fragment() {
     var plName: String = ""
     var databaseref = FirebaseDatabase.getInstance()
     var db = databaseref.getReference()
+    var gsonBuilder=GsonBuilder()
+    var gson=gsonBuilder.create()
     companion object {
         val READ_REQUEST_CODE = 42
     }
@@ -84,12 +86,11 @@ if (playerName.text.isNotEmpty()){
                     player.name=playerName.text.toString()
     player.picpath=""
     player.params=params
-var gsonBuilder=GsonBuilder()
-    var gson=gsonBuilder.create()
+
     Log.d(this.toString(),gson.toJson(player))
     var pl=gson.toJson(player)
     bundle.putString("player",pl)
-    db.child(playerName.text.toString()).setValue(player)
+    db.child("Players").child(playerName.text.toString()).setValue(player)
                     var ChildParametersFragment = ChildParametersFragment()
                     ChildParametersFragment.arguments = bundle
                     var fragmentTransaction = fragmentManager!!.beginTransaction()
@@ -103,20 +104,41 @@ var gsonBuilder=GsonBuilder()
                     plName=arguments!!.getString("plname")
                     playerName.setText(plName)
                     p0!!.parentParamName.text=p1!!.name
+                    db.child("Players").child(plName).addValueEventListener(object :ValueEventListener{
+                        override fun onCancelled(d0: DatabaseError) {
+
+                        }
+
+                        override fun onDataChange(d0: DataSnapshot) {
+                            var pl=d0.getValue(Players::class.java)
+                            Log.d("NAME",pl?.name)
+                            for (p in pl!!.params!!){
+                                Log.d("NAME",p.name)
+                            }
+                        var parentParameter=p1!!
+                           var list=pl.params
+                            list!!.add(parentParameter)
+                            pl.params=list
+                            for (p in pl!!.params!!){
+                                Log.d("NAME",p.name)
+                            }
+                            p0.editButton.setOnClickListener {
+                                db.child("Players").child(plName).setValue(pl)
+                                /*  var bundle = Bundle()
+                                  bundle.putString("parpar", parametersAdapter.getRef(p2).key)
+                                  bundle.putString("plname", playerName.text.toString())
+
+                                  var ChildParametersFragment = ChildParametersFragment()
+                                  ChildParametersFragment.arguments = bundle
+                                  var fragmentTransaction = fragmentManager!!.beginTransaction()
+                                  fragmentTransaction.replace(R.id.main_content, ChildParametersFragment)
+                                  fragmentTransaction.commit()*/
+                            }
+                        }
+                    })
+
                     Log.d(this.toString(),plName)
-db.child("Players").child(plName).addValueEventListener(object :ValueEventListener{
-    override fun onCancelled(p0: DatabaseError) {
 
-    }
-
-    override fun onDataChange(p0: DataSnapshot) {
-var pl=p0.getValue(Players::class.java)
-        Log.d("NAME",pl?.name)
-        for (p in pl!!.params!!){
-            Log.d("NAME",p.name)
-        }
-    }
-})
 
                 }
 
