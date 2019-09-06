@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <LinearLayout
+            android:id="@+id/child_parameters_horizblock"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
                   android:orientation="horizontal"
-                  android:weightSum="4">
+                  android:weightSum="4"
+    android:layout_alignParentTop="true">
         <TextView
                 android:id="@+id/childparameter_name"
                 android:layout_width="0dp" android:layout_height="match_parent"
@@ -23,9 +26,12 @@
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/child_parameters_list"
             android:layout_width="match_parent"
-                                               android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
-<Button
-        android:id="@+id/save_totalvalue"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-android:text="save"/>
-</LinearLayout>
+            android:layout_height="wrap_content"
+    android:layout_below="@id/child_parameters_horizblock"
+    android:layout_above="@id/save_totalvalue"></androidx.recyclerview.widget.RecyclerView>
+    <Button
+            android:id="@+id/save_totalvalue"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="save"
+    android:layout_alignParentBottom="true"/>
+</RelativeLayout>

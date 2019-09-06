@@ -37,33 +37,36 @@ class AddPlayerFragment : Fragment() {
     lateinit var layoutManager: RecyclerView.LayoutManager
     lateinit var save_player_button: Button
     var params = ArrayList<ParentParameter>()
-    var parentParameter=ParentParameter()
-    var player=Players()
+    var parentParameter = ParentParameter()
+
     lateinit var parametersAdapter: FirebaseRecyclerAdapter<ParentParameter, ForPlayerParametersViewHolderr>
     var totalValue: String = ""
     var keyPos: String = ""
     var plName: String = ""
     var databaseref = FirebaseDatabase.getInstance()
     var db = databaseref.getReference()
-    var gsonBuilder=GsonBuilder()
-    var gson=gsonBuilder.create()
+    var gsonBuilder = GsonBuilder()
+    var gson = gsonBuilder.create()
+
     companion object {
         val READ_REQUEST_CODE = 42
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var frview = inflater.inflate(R.layout.add_player_fragment, container, false)
         initView(frview)
+        if (arguments!=null){
+            var name_from_childfr=arguments!!.getString("pname")
+            playerName.setText(name_from_childfr.toString())
+        }
         addPhotoButton.setOnClickListener {
             openImage()
         }
         var databaseref = FirebaseDatabase.getInstance()
         var database = databaseref.getReference("ParentParameter")
+        var list=ArrayList<ParentParameter>()
         parametersAdapter = object : FirebaseRecyclerAdapter<ParentParameter, ForPlayerParametersViewHolderr>(
             ParentParameter::class.java,
             R.layout.add_player_item,
@@ -72,77 +75,38 @@ class AddPlayerFragment : Fragment() {
         ) {
 
             override fun populateViewHolder(p0: ForPlayerParametersViewHolderr?, p1: ParentParameter?, p2: Int) {
-                if (arguments == null) {
+
                 p0!!.parentParamName?.text = p1?.name
                 p0.parentParamValue.text = "0"
+                list.add(p1!!)
+
                 p0.editButton.setOnClickListener {
-if (playerName.text.isNotEmpty()){
-                    Log.d(activity!!.localClassName, "button works")
-                    var bundle = Bundle()
-                    bundle.putString("parpar", parametersAdapter.getRef(p2).key)
-                    bundle.putString("plname", playerName.text.toString())
-    parentParameter=p1!!
-    params.add(parentParameter)
-                    player.name=playerName.text.toString()
-    player.picpath=""
-    player.params=params
+                    for(l in list){
+                        Log.d("adpl",l.name)
+                    }
+                    if (playerName.text.isNotEmpty()) {
+                        if (arguments == null) {
+                            var player = Players()
+                            player.name=playerName.text.toString()
+                            player.picpath=""
+                            player.params=list
+                          db.child("Players").child(playerName.text.toString()).setValue(player) }
 
-    Log.d(this.toString(),gson.toJson(player))
-    var pl=gson.toJson(player)
-    bundle.putString("player",pl)
-    db.child("Players").child(playerName.text.toString()).setValue(player)
-                    var ChildParametersFragment = ChildParametersFragment()
-                    ChildParametersFragment.arguments = bundle
-                    var fragmentTransaction = fragmentManager!!.beginTransaction()
-                    fragmentTransaction.replace(R.id.main_content, ChildParametersFragment)
-                    fragmentTransaction.commit()}
-                    else {
-    return@setOnClickListener
-}
+                        var bundle = Bundle()
+                            bundle.putString("plname", playerName.text.toString())
+                            bundle.putString("parpar", parametersAdapter.getItem(p2).name)
+                        Log.d("position", p2.toString() )
+                            bundle.putInt("pos",p2)
+                            var ChildParametersFragment = ChildParametersFragment()
+                            ChildParametersFragment.arguments = bundle
+                            var fragmentTransaction = fragmentManager!!.beginTransaction()
+                            fragmentTransaction.replace(R.id.main_content, ChildParametersFragment)
+                            fragmentTransaction.commit()
+
+                    } else {
+                        return@setOnClickListener
+                    }
                 }
-                } else {
-                    plName=arguments!!.getString("plname")
-                    playerName.setText(plName)
-                    p0!!.parentParamName.text=p1!!.name
-                    db.child("Players").child(plName).addValueEventListener(object :ValueEventListener{
-                        override fun onCancelled(d0: DatabaseError) {
-
-                        }
-
-                        override fun onDataChange(d0: DataSnapshot) {
-                            var pl=d0.getValue(Players::class.java)
-                            Log.d("NAME",pl?.name)
-                            for (p in pl!!.params!!){
-                                Log.d("NAME",p.name)
-                            }
-                        var parentParameter=p1!!
-                           var list=pl.params
-                            list!!.add(parentParameter)
-                            pl.params=list
-                            for (p in pl!!.params!!){
-                                Log.d("NAME",p.name)
-                            }
-                            p0.editButton.setOnClickListener {
-                                db.child("Players").child(plName).setValue(pl)
-                                /*  var bundle = Bundle()
-                                  bundle.putString("parpar", parametersAdapter.getRef(p2).key)
-                                  bundle.putString("plname", playerName.text.toString())
-
-                                  var ChildParametersFragment = ChildParametersFragment()
-                                  ChildParametersFragment.arguments = bundle
-                                  var fragmentTransaction = fragmentManager!!.beginTransaction()
-                                  fragmentTransaction.replace(R.id.main_content, ChildParametersFragment)
-                                  fragmentTransaction.commit()*/
-                            }
-                        }
-                    })
-
-                    Log.d(this.toString(),plName)
-
-
-                }
-
-
             }
 
         }
@@ -151,11 +115,10 @@ if (playerName.text.isNotEmpty()){
         playerParameters.adapter = parametersAdapter
         save_player_button = frview.findViewById(R.id.save_player_button)
         save_player_button.setOnClickListener {
-
-
         }
         return frview
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
