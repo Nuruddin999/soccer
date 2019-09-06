@@ -75,7 +75,29 @@ class AddPlayerFragment : Fragment() {
         ) {
 
             override fun populateViewHolder(p0: ForPlayerParametersViewHolderr?, p1: ParentParameter?, p2: Int) {
+                if(arguments!=null){
+                    db.child("Players").addListenerForSingleValueEvent(object :ValueEventListener{
+                        override fun onCancelled(d0: DatabaseError) {
 
+                        }
+
+                        override fun onDataChange(d0: DataSnapshot) {
+                            if(d0.exists()) {
+                                var plr = d0.child(playerName.text.toString()).getValue(Players::class.java)
+                                Log.d("adpl", "fetched pl  ${plr!!.name}")
+                                if (plr != null) {
+                                    for (p in plr.params!!) {
+                                        if (p.name.equals(p1!!.name)) {
+                                            p0!!.parentParamValue.setText(p.totalValue)
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+
+                    })
+                }
                 p0!!.parentParamName?.text = p1?.name
                 p0.parentParamValue.text = "0"
                 list.add(p1!!)
@@ -113,9 +135,32 @@ class AddPlayerFragment : Fragment() {
         // playerParameters.isNestedScrollingEnabled=false
         playerParameters.layoutManager = layoutManager
         playerParameters.adapter = parametersAdapter
-        save_player_button = frview.findViewById(R.id.save_player_button)
-        save_player_button.setOnClickListener {
+save_player_button.setOnClickListener {
+    db.child("Players").addListenerForSingleValueEvent(object :ValueEventListener{
+        override fun onCancelled(d0: DatabaseError) {
+
         }
+
+        override fun onDataChange(d0: DataSnapshot) {
+            if (d0.exists()) {
+                var plr = d0.child(playerName.text.toString()).getValue(Players::class.java)
+                Log.d("adpl", "fetched pl  ${plr!!.name}")
+                if (plr != null) {
+                    db.child("Final Players").child(playerName.text.toString()).setValue(plr)
+                    db.child("Players").removeValue()
+                }
+            }
+        }
+    })
+
+    var AddPlayerFragment=AddPlayerFragment()
+    var fragmentTransaction=fragmentManager!!.beginTransaction()
+    fragmentTransaction.replace(R.id.main_content,AddPlayerFragment)
+    fragmentTransaction.commit()
+
+
+}
+
         return frview
     }
 
@@ -154,7 +199,7 @@ class AddPlayerFragment : Fragment() {
         addPhotoButton = frview!!.findViewById(R.id.add_photo_button)
         playerName = frview!!.findViewById(R.id.add_player_input_name)
         playerParameters = frview!!.findViewById(R.id.add_player_parent_parameterlist)
-
+        save_player_button = frview.findViewById(R.id.save_player_button)
         layoutManager = LinearLayoutManager(context)
     }
 }
