@@ -153,48 +153,30 @@ class AddPlayerFragment : Fragment() {
         save_player_button.setOnClickListener {
             var storage = FirebaseStorage.getInstance()
             var storageref = storage.reference
-            if (filepath != null) {
-                storageref = storageref.child("images/${playerName.text.toString()}")
-                storageref.putFile(filepath!!)
-                    .addOnCompleteListener(object : OnCompleteListener<UploadTask.TaskSnapshot> {
-                        override fun onComplete(p0: Task<UploadTask.TaskSnapshot>) {
-                            storageref.downloadUrl.addOnCompleteListener(object : OnCompleteListener<Uri> {
-                                override fun onComplete(p0: Task<Uri>) {
-                                    db.child("Players").child(playerName.text.toString()).child("picpath")
-                                        .setValue(p0.result.toString())
-                                    db.child("Players").addListenerForSingleValueEvent(object : ValueEventListener {
-                                        override fun onCancelled(d0: DatabaseError) {
 
-                                        }
+            db.child("Players").addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(d0: DatabaseError) {
 
-                                        override fun onDataChange(d0: DataSnapshot) {
-                                            if (d0.exists()) {
-                                                var plr =
-                                                    d0.child(playerName.text.toString()).getValue(Players::class.java)
-                                                Log.d("adpl", "fetched pl  ${plr!!.name}")
-                                                if (plr != null) {
-                                                    db.child("Final Players").child(playerName.text.toString())
-                                                        .setValue(plr)
-                                                    db.child("Players").removeValue()
-                                                }
-                                            }
-                                        }
-                                    })
+                }
 
-                                }
-                            })
+                override fun onDataChange(d0: DataSnapshot) {
+                    if (d0.exists()) {
+                        var plr = d0.child(playerName.text.toString()).getValue(Players::class.java)
+                        db.child("Final Players").child(playerName.text.toString())
+                            .setValue(plr)
+                        db.child("Players").removeValue()
+                    } else {
+                        var plr=Players()
+                        plr.name=playerName.text.toString()
+                        plr.params=list
+                        db.child("Final Players").child(playerName.text.toString())
+                            .setValue(plr)
+                        db.child("Players").removeValue()
+                    }
 
-                        }
-                    })
-            }
+                }
 
-
-            var AddPlayerFragment = AddPlayerFragment()
-            var fragmentTransaction = fragmentManager!!.beginTransaction()
-            fragmentTransaction.replace(R.id.main_content, AddPlayerFragment)
-            fragmentTransaction.commit()
-
-
+            })
         }
 
         return frview
