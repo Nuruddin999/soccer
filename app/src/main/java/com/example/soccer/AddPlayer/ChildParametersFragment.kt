@@ -19,7 +19,7 @@ import com.google.gson.GsonBuilder
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ChildParametersFragment : Fragment() {
+open class ChildParametersFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: ForPlayerParameterAdapter
     lateinit var layoutManager: RecyclerView.LayoutManager
@@ -52,6 +52,7 @@ class ChildParametersFragment : Fragment() {
         saveTotalValueButton = v.findViewById(R.id.save_totalvalue)
         layoutManager = LinearLayoutManager(context)
         adapter = ForPlayerParameterAdapter(params!!, context!!, parentparamValue)
+        var picpath=arguments!!.getString("picpath")
         var parentparName = arguments!!.getString("parpar")
        var  pos=arguments!!.getInt("pos")
         Log.d("position","child fr  $pos")
@@ -84,7 +85,11 @@ params.add(parameter!!)
                     parentParameter.name=parentparName
                     parentParameter.totalValue=parentparamValue.text.toString()
                     db.child("Players").child(playerName!!).child("params").child(pos!!.toString()).setValue(parentParameter)
+
                     var bundle =Bundle()
+                    if (picpath!=null){
+                        bundle.putString("pc",picpath)
+                    }
                     bundle.putString("pname",playerName.toString())
                     var AddPlayerFragment = AddPlayerFragment()
                     AddPlayerFragment.arguments = bundle

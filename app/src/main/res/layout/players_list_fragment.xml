@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/players_list_fr"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/players_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_above="@id/new_player_button"></androidx.recyclerview.widget.RecyclerView>
+    <Button
+            android:id="@+id/new_player_button"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="New player"
+            android:layout_alignParentBottom="true"/>
+</RelativeLayout>

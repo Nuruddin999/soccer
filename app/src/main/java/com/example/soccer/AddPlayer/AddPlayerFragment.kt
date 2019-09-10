@@ -21,9 +21,14 @@ import com.example.soccer.Models.ParentParameter
 import com.example.soccer.Models.Players
 import com.example.soccer.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.add_player_fragment.*
 import java.io.FileDescriptor
 import java.util.ArrayList
@@ -47,18 +52,24 @@ class AddPlayerFragment : Fragment() {
     var db = databaseref.getReference()
     var gsonBuilder = GsonBuilder()
     var gson = gsonBuilder.create()
+    var filepath: Uri? = null
 
     companion object {
         val READ_REQUEST_CODE = 42
     }
 
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var frview = inflater.inflate(R.layout.add_player_fragment, container, false)
         initView(frview)
-        if (arguments!=null){
-            var name_from_childfr=arguments!!.getString("pname")
+        if (arguments != null) {
+            var name_from_childfr = arguments!!.getString("pname")
+            var picpath = arguments!!.getString("pc")
+            if (picpath != null) {
+                filepath=Uri.parse(picpath)
+                Picasso.get().load(picpath).into(playerPhoto)
+                //playerPhoto.setImageURI(filepath)
+            }
             playerName.setText(name_from_childfr.toString())
         }
         addPhotoButton.setOnClickListener {
@@ -66,7 +77,7 @@ class AddPlayerFragment : Fragment() {
         }
         var databaseref = FirebaseDatabase.getInstance()
         var database = databaseref.getReference("ParentParameter")
-        var list=ArrayList<ParentParameter>()
+        var list = ArrayList<ParentParameter>()
         parametersAdapter = object : FirebaseRecyclerAdapter<ParentParameter, ForPlayerParametersViewHolderr>(
             ParentParameter::class.java,
             R.layout.add_player_item,
@@ -75,14 +86,14 @@ class AddPlayerFragment : Fragment() {
         ) {
 
             override fun populateViewHolder(p0: ForPlayerParametersViewHolderr?, p1: ParentParameter?, p2: Int) {
-                if(arguments!=null){
-                    db.child("Players").addListenerForSingleValueEvent(object :ValueEventListener{
+                if (arguments != null) {
+                    db.child("Players").addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onCancelled(d0: DatabaseError) {
 
                         }
 
                         override fun onDataChange(d0: DataSnapshot) {
-                            if(d0.exists()) {
+                            if (d0.exists()) {
                                 var plr = d0.child(playerName.text.toString()).getValue(Players::class.java)
                                 Log.d("adpl", "fetched pl  ${plr!!.name}")
                                 if (plr != null) {
@@ -103,27 +114,31 @@ class AddPlayerFragment : Fragment() {
                 list.add(p1!!)
 
                 p0.editButton.setOnClickListener {
-                    for(l in list){
-                        Log.d("adpl",l.name)
+                    for (l in list) {
+                        Log.d("adpl", l.name)
                     }
                     if (playerName.text.isNotEmpty()) {
                         if (arguments == null) {
                             var player = Players()
-                            player.name=playerName.text.toString()
-                            player.picpath=""
-                            player.params=list
-                          db.child("Players").child(playerName.text.toString()).setValue(player) }
+                            player.name = playerName.text.toString()
+                            player.picpath = ""
+                            player.params = list
+                            db.child("Players").child(playerName.text.toString()).setValue(player)
+                        }
 
                         var bundle = Bundle()
-                            bundle.putString("plname", playerName.text.toString())
-                            bundle.putString("parpar", parametersAdapter.getItem(p2).name)
-                        Log.d("position", p2.toString() )
-                            bundle.putInt("pos",p2)
-                            var ChildParametersFragment = ChildParametersFragment()
-                            ChildParametersFragment.arguments = bundle
-                            var fragmentTransaction = fragmentManager!!.beginTransaction()
-                            fragmentTransaction.replace(R.id.main_content, ChildParametersFragment)
-                            fragmentTransaction.commit()
+                        bundle.putString("plname", playerName.text.toString())
+                        bundle.putString("parpar", parametersAdapter.getItem(p2).name)
+                        if (filepath != null) {
+                            bundle.putString("picpath", filepath.toString())
+                        }
+                        Log.d("position", p2.toString())
+                        bundle.putInt("pos", p2)
+                        var ChildParametersFragment = ChildParametersFragment()
+                        ChildParametersFragment.arguments = bundle
+                        var fragmentTransaction = fragmentManager!!.beginTransaction()
+                        fragmentTransaction.replace(R.id.main_content, ChildParametersFragment)
+                        fragmentTransaction.commit()
 
                     } else {
                         return@setOnClickListener
@@ -135,31 +150,52 @@ class AddPlayerFragment : Fragment() {
         // playerParameters.isNestedScrollingEnabled=false
         playerParameters.layoutManager = layoutManager
         playerParameters.adapter = parametersAdapter
-save_player_button.setOnClickListener {
-    db.child("Players").addListenerForSingleValueEvent(object :ValueEventListener{
-        override fun onCancelled(d0: DatabaseError) {
+        save_player_button.setOnClickListener {
+            var storage = FirebaseStorage.getInstance()
+            var storageref = storage.reference
+            if (filepath != null) {
+                storageref = storageref.child("images/${playerName.text.toString()}")
+                storageref.putFile(filepath!!)
+                    .addOnCompleteListener(object : OnCompleteListener<UploadTask.TaskSnapshot> {
+                        override fun onComplete(p0: Task<UploadTask.TaskSnapshot>) {
+                            storageref.downloadUrl.addOnCompleteListener(object : OnCompleteListener<Uri> {
+                                override fun onComplete(p0: Task<Uri>) {
+                                    db.child("Players").child(playerName.text.toString()).child("picpath")
+                                        .setValue(p0.result.toString())
+                                    db.child("Players").addListenerForSingleValueEvent(object : ValueEventListener {
+                                        override fun onCancelled(d0: DatabaseError) {
 
-        }
+                                        }
 
-        override fun onDataChange(d0: DataSnapshot) {
-            if (d0.exists()) {
-                var plr = d0.child(playerName.text.toString()).getValue(Players::class.java)
-                Log.d("adpl", "fetched pl  ${plr!!.name}")
-                if (plr != null) {
-                    db.child("Final Players").child(playerName.text.toString()).setValue(plr)
-                    db.child("Players").removeValue()
-                }
+                                        override fun onDataChange(d0: DataSnapshot) {
+                                            if (d0.exists()) {
+                                                var plr =
+                                                    d0.child(playerName.text.toString()).getValue(Players::class.java)
+                                                Log.d("adpl", "fetched pl  ${plr!!.name}")
+                                                if (plr != null) {
+                                                    db.child("Final Players").child(playerName.text.toString())
+                                                        .setValue(plr)
+                                                    db.child("Players").removeValue()
+                                                }
+                                            }
+                                        }
+                                    })
+
+                                }
+                            })
+
+                        }
+                    })
             }
+
+
+            var AddPlayerFragment = AddPlayerFragment()
+            var fragmentTransaction = fragmentManager!!.beginTransaction()
+            fragmentTransaction.replace(R.id.main_content, AddPlayerFragment)
+            fragmentTransaction.commit()
+
+
         }
-    })
-
-    var AddPlayerFragment=AddPlayerFragment()
-    var fragmentTransaction=fragmentManager!!.beginTransaction()
-    fragmentTransaction.replace(R.id.main_content,AddPlayerFragment)
-    fragmentTransaction.commit()
-
-
-}
 
         return frview
     }
@@ -170,6 +206,7 @@ save_player_button.setOnClickListener {
             var uri: Uri? = null
             if (data != null) {
                 uri = data.data
+                filepath = uri
                 var parcelFileDescriptor: ParcelFileDescriptor = context!!.contentResolver.openFileDescriptor(uri, "r")
                 var filedescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
                 var image: Bitmap = BitmapFactory.decodeFileDescriptor(filedescriptor)

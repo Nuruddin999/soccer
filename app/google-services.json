@@ -52,6 +52,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "719621574259-jn2jiedvpebu6l4aqhf1ti4ohd06f9ds.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.soccer",
+            "certificate_hash": "40662ee44b90da330fb0a3287789927690551683"
+          }
+        },
+        {
           "client_id": "719621574259-94fj8tptdvh3rstk6t42v3gtmq0mdglc.apps.googleusercontent.com",
           "client_type": 3
         }

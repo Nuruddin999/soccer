@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="playerphotosize">200dip</dimen>
+    <dimen name="playersphoto">230dip</dimen>
+
 
 </resources>
