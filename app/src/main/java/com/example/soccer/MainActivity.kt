@@ -13,16 +13,12 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.navigation_home -> {
                var PlayersList=PlayersList()
-                var fragmentTransaction=supportFragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.main_content,PlayersList)
-                fragmentTransaction.commit()
+                Common.getFragment(PlayersList,R.id.main_content,this)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
                 var ParametersListFragment=ParametersListFragment()
-                var fragmentTransaction=supportFragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.main_content,ParametersListFragment)
-                fragmentTransaction.commit()
+             Common.getFragment(ParametersListFragment,R.id.main_content,this)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
@@ -36,9 +32,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         var PlayersList=PlayersList()
-        var fragmentTransaction=supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.main_content,PlayersList)
-        fragmentTransaction.commit()
+        Common.getFragment(PlayersList,R.id.main_content,this)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
 

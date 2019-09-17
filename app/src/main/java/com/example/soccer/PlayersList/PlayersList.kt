@@ -8,7 +8,10 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.soccer.AddPlayer.AddPLayerFr
 import com.example.soccer.AddPlayer.AddPlayerFragment
+import com.example.soccer.Common
+import com.example.soccer.MainActivity
 import com.example.soccer.Models.Players
 import com.example.soccer.R
 import com.google.firebase.database.*
@@ -20,6 +23,11 @@ class PlayersList:Fragment(){
     lateinit var add_player_button:Button
     var players = ArrayList<Players>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        var databaseref = FirebaseDatabase.getInstance()
+        var db = databaseref.getReference().child("Players").removeValue()
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var v: View = inflater.inflate(R.layout.players_list_fragment, container, false)
         recyclerView=v.findViewById(R.id.players_list)
@@ -28,7 +36,7 @@ class PlayersList:Fragment(){
         recyclerView.layoutManager=layoutManager
         recyclerView.adapter=adapter
         var databaseref = FirebaseDatabase.getInstance()
-        var db = databaseref.getReference().child("Final Players").addValueEventListener(object :ValueEventListener{
+        var db = databaseref.getReference().child("Final Players").addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
 
             }
@@ -37,16 +45,15 @@ class PlayersList:Fragment(){
 for (p in p0.children){
     var pl=p.getValue(Players::class.java)
     players.add(pl!!)
-    adapter.notifyDataSetChanged()
 }
+                adapter.notifyDataSetChanged()
             }
         })
          add_player_button=v.findViewById(R.id.new_player_button)
         add_player_button.setOnClickListener {
-            var AddPlayerFragment = AddPlayerFragment()
-            var fragmentTransaction = fragmentManager!!.beginTransaction()
-            fragmentTransaction.replace(R.id.main_content, AddPlayerFragment)
-            fragmentTransaction.commit()
+            //var AddPlayerFragment = AddPlayerFragment()
+var AddPLayerFr=AddPLayerFr()
+            Common.getFragment(AddPLayerFr,R.id.main_content, activity as MainActivity)
         }
         return  v
     }

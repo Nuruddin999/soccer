@@ -1,4 +1,4 @@
-package com.example.soccer.AddPlayer
+package com.example.soccer.PlayersList
 
 import android.content.Context
 import android.os.Bundle
@@ -11,64 +11,44 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.soccer.AddPlayer.AddPlayerFragment
+import com.example.soccer.AddPlayer.ChildParametersFragment
+import com.example.soccer.AddPlayer.ForPlayerParameterAdapter
 import com.example.soccer.Common
 import com.example.soccer.MainActivity
 import com.example.soccer.Models.Parameter
 import com.example.soccer.Models.ParentParameter
-import com.example.soccer.Models.Players
 import com.example.soccer.R
-import com.google.firebase.database.*
-import com.google.gson.GsonBuilder
-import java.util.*
-import kotlin.collections.ArrayList
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 
-open class ChildParametersFragment : Fragment() {
-    lateinit var recyclerView: RecyclerView
-    lateinit var adapter: ForPlayerParameterAdapter
-    lateinit var layoutManager: RecyclerView.LayoutManager
-    lateinit var parentparamName: TextView
-    lateinit var parentparamValue: TextView
-    lateinit var saveTotalValueButton: Button
-
-
-    var params = ArrayList<Parameter>()
-    var parentParameter = ParentParameter()
-    var parparList = ArrayList<ParentParameter>()
-    var players = Players()
-    var totalValue: String? = null
-    var playerName: String? = null
-    var databaseref = FirebaseDatabase.getInstance()
-    var db = databaseref.getReference()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+class PlayerEditChildFragment:ChildParametersFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
+var pos=0
         var v: View = inflater.inflate(R.layout.child_parameters_list, container, false)
+        playerName=arguments!!.getString("plname")
+        pos=arguments!!.getInt("pos")
         val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
         var picpath=sharedPref!!.getString("picpath","")
-        Log.d("sharedpr",picpath)
-        playerName = arguments!!.getString("plname")
-
+        Log.d("sharedpr player edit",picpath)
+        Log.d("arguments","${pos.toString()}  , $playerName")
+        params = ArrayList<Parameter>()
+        var parentparName=arguments!!.getString("parpar")
         recyclerView = v.findViewById(R.id.child_parameters_list)
         parentparamName = v.findViewById(R.id.childparameter_name)
         parentparamValue = v.findViewById(R.id.childparameter_value)
         saveTotalValueButton = v.findViewById(R.id.save_totalvalue)
-        layoutManager = LinearLayoutManager(context)
-
-        var parentparName = arguments!!.getString("parpar")
-       var  pos=arguments!!.getInt("pos")
-        Log.d("position","child fr  $pos")
-
-        parentparamName.text = parentparName
+        layoutManager=LinearLayoutManager(context)
         adapter = ForPlayerParameterAdapter(params!!, context!!, parentparamValue)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
         var databaseref = FirebaseDatabase.getInstance()
-        var database = databaseref.getReference("Players").child(playerName.toString()!!).child("params").child(pos.toString()).child("parameters")
-        Log.d("path in child","${database.ref}")
+        Log.d("playername","$playerName")
+        var database = databaseref.getReference("Final Players").child(playerName.toString()!!).child("params").child(pos.toString()).child("parameters")
+        Log.d("path","${database.ref}")
         database.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
@@ -91,25 +71,23 @@ open class ChildParametersFragment : Fragment() {
                     parentParameter.parameters=params
                     parentParameter.name=parentparName
                     parentParameter.totalValue=parentparamValue.text.toString()
-                    db.child("Players").child(playerName!!).child("params").child(pos!!.toString()).setValue(parentParameter).addOnSuccessListener {
-                        var bundle=Bundle()
-                        bundle.putString("plname",playerName)
-                        bundle.putString("picpath",picpath)
-                        Log.d("picturepath ",picpath)
-                        var AddPLayerFr=AddPLayerFr()
-                        AddPLayerFr.arguments=bundle
-                        Common.getFragment(AddPLayerFr,R.id.main_content,activity as MainActivity)
-                    }
+                    db.child("Final Players").child(playerName!!).child("params").child(pos!!.toString()).setValue(parentParameter)
+                    var bundle=Bundle()
+                    bundle.putString("plname",playerName)
+                    bundle.putString("picpath",picpath)
+                    var PlayerEditFr=PlayerEditFr()
+                    PlayerEditFr.arguments=bundle
+                    Common.getFragment(PlayerEditFr,R.id.main_content,activity as MainActivity)
 
-            }
+                }
+
+
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
             }
         })
 
-
-
-        return v
+    return v
     }
 }

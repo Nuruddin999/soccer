@@ -2,51 +2,46 @@ package com.example.soccer.AddPlayer
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.util.Log
 import android.widget.EditText
-import androidx.recyclerview.widget.RecyclerView
 import com.example.soccer.Common
 import com.example.soccer.MainActivity
 import com.example.soccer.Models.ParentParameter
-import com.example.soccer.PlayersList.PlayerEditChildFragment
+import com.example.soccer.Models.Players
 import com.example.soccer.R
+import com.google.firebase.database.FirebaseDatabase
 import java.util.ArrayList
 
-open class ForPlayerParametersAdapter(
-    var list: ArrayList<ParentParameter>,
-    var context: Context,
-    var activity: MainActivity,
-    var playername: EditText
-):
-    RecyclerView.Adapter<ForPlayerParametersViewHolderr>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForPlayerParametersViewHolderr {
-        val v= LayoutInflater.from(parent.context).inflate(R.layout.add_player_item,parent, false)
-        return ForPlayerParametersViewHolderr(v)
-    }
-
-    override fun getItemCount(): Int {
-        return  list.size
-    }
-
+class AddPlayerEditChildParamsAdapter(
+    list: ArrayList<ParentParameter>,
+    context: Context,
+    activity: MainActivity,
+    playername: EditText
+) : ForPlayerParametersAdapter(list, context, activity, playername) {
     override fun onBindViewHolder(holder: ForPlayerParametersViewHolderr, position: Int) {
         var parentParameter = list[position]
         holder.parentParamName.text = parentParameter.name
         holder.parentParamValue.setText(parentParameter.totalValue)
+
         holder.editButton.setOnClickListener {
             if (playername.text.isNullOrBlank()) {
                 return@setOnClickListener
             } else {
+                var player= Players()
+                player.name=playername.text.toString()
+                player.params=list
+                var databaseref = FirebaseDatabase.getInstance()
+                var db = databaseref.getReference()
+                db.child("Players").child(player.name!!).setValue(player)
                 var bundle = Bundle()
                 bundle.putInt("pos", position)
                 bundle.putString("plname", playername.text.toString())
                 bundle.putString("parpar", parentParameter.name)
-                var PlayerEditChildFragment = PlayerEditChildFragment()
-                PlayerEditChildFragment.arguments = bundle
-                Common.getFragment(PlayerEditChildFragment, R.id.main_content, activity)
+                var ChildParametersFragment = ChildParametersFragment()
+               ChildParametersFragment.arguments = bundle
+                Common.getFragment(ChildParametersFragment, R.id.main_content, activity)
             }
 
         }
     }
-
 }

@@ -17,8 +17,11 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.soccer.Common
+import com.example.soccer.MainActivity
 import com.example.soccer.Models.ParentParameter
 import com.example.soccer.Models.Players
+import com.example.soccer.PlayersList.PlayersList
 import com.example.soccer.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.android.gms.tasks.OnCompleteListener
@@ -66,7 +69,7 @@ class AddPlayerFragment : Fragment() {
             var name_from_childfr = arguments!!.getString("pname")
             var picpath = arguments!!.getString("pc")
             if (picpath != null) {
-                filepath=Uri.parse(picpath)
+                filepath = Uri.parse(picpath)
                 Picasso.get().load(picpath).into(playerPhoto)
                 //playerPhoto.setImageURI(filepath)
             }
@@ -151,6 +154,9 @@ class AddPlayerFragment : Fragment() {
         playerParameters.layoutManager = layoutManager
         playerParameters.adapter = parametersAdapter
         save_player_button.setOnClickListener {
+            if (playerName.text.isNullOrBlank()){
+                return@setOnClickListener
+            } else {
             var storage = FirebaseStorage.getInstance()
             var storageref = storage.reference
 
@@ -161,14 +167,16 @@ class AddPlayerFragment : Fragment() {
 
                 override fun onDataChange(d0: DataSnapshot) {
                     if (d0.exists()) {
+
                         var plr = d0.child(playerName.text.toString()).getValue(Players::class.java)
                         db.child("Final Players").child(playerName.text.toString())
                             .setValue(plr)
                         db.child("Players").removeValue()
                     } else {
-                        var plr=Players()
-                        plr.name=playerName.text.toString()
-                        plr.params=list
+                        Log.d("filepath", filepath.toString())
+                        var plr = Players()
+                        plr.name = playerName.text.toString()
+                        plr.params = list
                         db.child("Final Players").child(playerName.text.toString())
                             .setValue(plr)
                         db.child("Players").removeValue()
@@ -177,9 +185,31 @@ class AddPlayerFragment : Fragment() {
                 }
 
             })
+            if (filepath!=null) {
+                storageref = storageref.child("images/${playerName.text.toString()}")
+                storageref.putFile(filepath!!)
+                    .addOnCompleteListener(object : OnCompleteListener<UploadTask.TaskSnapshot> {
+                        override fun onComplete(p0: Task<UploadTask.TaskSnapshot>) {
+                        storageref.downloadUrl.addOnCompleteListener(object :OnCompleteListener<Uri>{
+                            override fun onComplete(p0: Task<Uri>) {
+                                db.child("Final Players").child(playerName.text.toString()).child("picpath").setValue(p0.result.toString())
+                            }
+                        })
+                        }
+                    })
+            }
+        }
+        var playersList=PlayersList()
+            Common.getFragment(playersList,R.id.main_content,activity as MainActivity)
         }
 
         return frview
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("stop","stop")
+        db.child("Players").removeValue()
     }
 
 

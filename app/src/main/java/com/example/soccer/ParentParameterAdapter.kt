@@ -23,7 +23,9 @@ import java.util.ArrayList
 
      override fun onBindViewHolder(holder: ParamsViewHolder, position: Int) {
 var parentParameter=list[position]
+         parentParameter.totalValue="0"
          holder.parentParamName.text=parentParameter.name
+         holder.parentParamValue.text=parentParameter.totalValue
 
 
      }

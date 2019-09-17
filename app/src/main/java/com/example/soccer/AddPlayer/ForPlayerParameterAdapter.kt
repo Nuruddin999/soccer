@@ -5,10 +5,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.example.soccer.Models.Parameter
+import com.example.soccer.Models.ParentParameter
 import com.example.soccer.R
+import com.google.firebase.database.FirebaseDatabase
 import java.util.ArrayList
 
 class ForPlayerParameterAdapter(var list: ArrayList<Parameter>, val context: Context, var listener: TextView) :
@@ -28,14 +31,14 @@ class ForPlayerParameterAdapter(var list: ArrayList<Parameter>, val context: Con
 
         var total: Int = 0
         var lastNotZeroValue:Int=0
-        p0.parameterValue.setText("0")
-        parameter.value=p0.parameterValue.text.toString()
+        p0.parameterValue.setText(parameter.value.toString())
         p0.parameterValue.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
 
             }
 
@@ -57,6 +60,15 @@ class ForPlayerParameterAdapter(var list: ArrayList<Parameter>, val context: Con
 
             }
         })
+//        savebutton.setOnClickListener {
+//            var parentParameter=ParentParameter()
+//            parentParameter.parameters=list
+//            parentParameter.totalValue=listener.text.toString()
+//            parentParameter.name=parentparname
+//            var databaseref = FirebaseDatabase.getInstance()
+//            var database = databaseref.getReference("Final Players").child(playerName.toString()!!).child("params").child(pos.toString()).child("parameters")
+//
+//        }
 
 
     }
